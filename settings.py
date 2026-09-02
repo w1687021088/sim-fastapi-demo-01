@@ -1,24 +1,19 @@
 # settings.py
+from typing import ClassVar
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
 
 
-class AppSettings(BaseSettings):
-    """应用程序设置
 
-       Attributes:
-           APP_HOST (str): 应用主机
-           APP_PORT (str): 应用端口
-           DB_HOST (str): 数据库主机
-           DB_PORT (int): 数据库端口
-           DB_NAME (str): 数据库名称
-           DB_USER (str): 数据库用户
-           DB_PASSWORD (str): 数据库密码
+class AppConfigSettings(BaseSettings):
 
-       """
+    """应用程序设置"""
     # 基础配置
     APP_HOST: str = "127.0.0.1"
     APP_PORT: int = 8080
+
+    BASE_DIR: ClassVar[Path] = Path(__file__).resolve().parent
 
     # 数据库配置
     DB_HOST: str = "localhost"
@@ -35,7 +30,7 @@ class AppSettings(BaseSettings):
     )
 
 
-app_settings = AppSettings()
+app_settings = AppConfigSettings()
 
 # 数据库配置
 TORTOISE_ORM = {
@@ -60,9 +55,9 @@ TORTOISE_ORM = {
     # 应用模型映射
     "apps": {
         "models": {
-            "models": ["apps.models"],
+            "models": ["src.apps.models"],
             "default_connection": "default",
-            "migrations": "apps.migrations",  # 新增：指定迁移文件存放路径
+            "migrations": "src.apps.migrations",  # 新增：指定迁移文件存放路径
         },
     },
     # 全局配置（可选）
@@ -101,7 +96,6 @@ aerich upgrade
 
 如果发现 upgrade 错了，立刻执行 aerich downgrade -1 回滚
 """
-
 
 """
 init 
