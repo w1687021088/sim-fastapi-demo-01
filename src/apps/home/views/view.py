@@ -7,4 +7,4 @@ router = APIRouter()
 @router.get("/info")
 async def info():
     logger.info("info, 我来啦")
-    return "info"
+    return "info111"
