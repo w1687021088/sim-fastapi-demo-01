@@ -4,6 +4,9 @@ from fastapi import Request
 
 
 class CacheRequestBodyMiddleware(BaseHTTPMiddleware):
+    """
+    缓存请求体
+    """
     async def dispatch(self, request: Request, call_next):
         # 1. 缓存请求体（已有）
         if request.method in ["POST", "PUT", "PATCH"]:
