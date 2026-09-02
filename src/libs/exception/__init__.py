@@ -1,3 +1,4 @@
+import json
 from typing import Optional, Any
 from fastapi import Request, status, FastAPI
 from fastapi.responses import JSONResponse
@@ -5,6 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 import datetime
 from src.config import BizCode, biz_code_messages
+from src.libs.log import logger
 
 
 class AppException(Exception):
@@ -52,6 +54,7 @@ def register_exception(app: FastAPI):
     # 处理所有自定义的业务异常
     @app.exception_handler(AppException)
     async def app_exception_handler(request: Request, exc: AppException):
+        request_id = getattr(request.state, "request_id", None)
         return JSONResponse(
             status_code=exc.http_status_code,
             content={
@@ -60,7 +63,8 @@ def register_exception(app: FastAPI):
                 "message": exc.message,
                 "data": exc.data,
                 "path": request.url.path,
-                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                "request_id": request_id,
             }
         )
 
@@ -68,6 +72,8 @@ def register_exception(app: FastAPI):
     @app.exception_handler(StarletteHTTPException)
     async def http_exception_handler(request: Request, exc: StarletteHTTPException):
         message = exc.detail or "请求处理失败"
+        # 获取请求 ID
+        request_id = getattr(request.state, "request_id", None)
         return JSONResponse(
             status_code=exc.status_code,
             content={
@@ -76,7 +82,8 @@ def register_exception(app: FastAPI):
                 "message": message,
                 "data": None,
                 "path": request.url.path,
-                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                "request_id": request_id,
             }
         )
 
@@ -84,6 +91,8 @@ def register_exception(app: FastAPI):
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(request: Request, exc: RequestValidationError):
         errors = [{"field": ".".join(str(l) for l in e["loc"]), "msg": e["msg"]} for e in exc.errors()]
+        # 获取请求 ID
+        request_id = getattr(request.state, "request_id", None)
         return JSONResponse(
             status_code=200,
             content={
@@ -92,6 +101,7 @@ def register_exception(app: FastAPI):
                 "message": "请求参数校验失败",
                 "data": None,
                 "errors": errors,
+                "request_id": request_id,
                 "path": request.url.path,
                 "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
             }
@@ -99,9 +109,28 @@ def register_exception(app: FastAPI):
 
     # 兜底处理所有未被捕获的系统异常
     @app.exception_handler(Exception)
-    async def general_exception_handler(request: Request, _: Exception):
-        # ⚠️ 生产环境务必记录完整的堆栈日志，方便排查 Bug
-        # logger.error(f"Unhandled system exception: {exc}", exc_info=True)
+    async def general_exception_handler(request: Request, exc: Exception):
+        # 获取请求 ID
+        request_id = getattr(request.state, "request_id", None)
+
+        # 从缓存读取 Body
+        cached_body = getattr(request.state, "cached_body", b"")
+
+        # 获取请求体
+        body_str = cached_body.decode("utf-8", errors="ignore")[:500] if cached_body else "<empty>"
+
+        # 记录错误日志
+        logger.bind(
+            error_type=type(exc).__name__,
+            error_msg=str(exc),
+            path=request.url.path,
+            method=request.method,
+            path_params=dict(request.path_params),
+            query_params=dict(request.query_params),
+            request_id=request_id,
+            request_body=body_str,
+        ).error("未处理的系统异常")
+
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,  # 改为 500
             content={
@@ -110,6 +139,7 @@ def register_exception(app: FastAPI):
                 "message": "服务器内部错误，请稍后重试",
                 "data": None,
                 "path": request.url.path,
-                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                "request_id": request_id,
             }
         )

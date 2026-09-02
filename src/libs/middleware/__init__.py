@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .visit_log import visit_log_middleware
+from .cache_request import CacheRequestBodyMiddleware
 
 
 def register_middleware(app: FastAPI):
@@ -21,3 +22,6 @@ def register_middleware(app: FastAPI):
 
     # 访问日志
     visit_log_middleware(app)
+
+    # 添加请求体缓存中间件
+    app.add_middleware(CacheRequestBodyMiddleware)

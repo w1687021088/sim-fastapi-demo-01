@@ -22,12 +22,12 @@ def config_logger():
     # 5. 添加文件 sink（同步写入）
     logger.add(
         log_path_info,
-        rotation="00:00",
+        rotation="100 MB",
         retention="3 days",
         mode="a+",
         encoding="utf-8",
-        level='INFO',
-        format="{name}:{function}:{line} | {message}",
+        filter=lambda record: record["level"].name == "INFO", # 否则会记录 INFO、WARNING、ERROR、CRITICAL
+        format="{time: YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}",
         enqueue=False,  # 关闭异步队列
     )
 
@@ -37,8 +37,8 @@ def config_logger():
         retention="4 weeks",
         mode="a+",
         encoding="utf-8",
-        level='ERROR',
-        format="{time: YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line}  | {message}",
+        level='ERROR', # 记录 ERROR、CRITICAL
+        format="{time: YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message} | {extra}",
         enqueue=False,
     )
 
