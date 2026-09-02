@@ -38,9 +38,9 @@ class AppException(Exception):
         return biz_code_messages.get(code, "未知错误")
 
 
-def raise_biz_error(code: BizCode, message: Optional[str] = None, data: Optional[Any] = None):
+def raise_biz_error(code: BizCode, message: Optional[str] = None, data: Optional[Any] = None, **kwargs):
     """快捷抛出业务异常"""
-    raise AppException(code=code, message=message, data=data)
+    raise AppException(code=code, message=message, data=data, **kwargs)
 
 
 def register_exception(app: FastAPI):
