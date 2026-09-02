@@ -26,7 +26,7 @@ def config_logger():
         retention="3 days",
         mode="a+",
         encoding="utf-8",
-        filter=lambda record: record["level"].name == "INFO", # 否则会记录 INFO、WARNING、ERROR、CRITICAL
+        filter=lambda record: record["level"].name in ("INFO", "WARNING"),  # 否则会记录 INFO、WARNING、ERROR、CRITICAL
         format="{time: YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}",
         enqueue=False,  # 关闭异步队列
     )

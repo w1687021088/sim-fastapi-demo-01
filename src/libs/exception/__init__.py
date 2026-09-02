@@ -55,6 +55,16 @@ def register_exception(app: FastAPI):
     @app.exception_handler(AppException)
     async def app_exception_handler(request: Request, exc: AppException):
         request_id = getattr(request.state, "request_id", None)
+        path = request.url.path
+        method = request.method
+
+        logger.bind(
+            path=path,
+            method=method,
+            request_id=request_id,
+            errors=exc,
+        ).warning(f"业务异常: {path}")
+
         return JSONResponse(
             status_code=exc.http_status_code,
             content={
@@ -62,7 +72,7 @@ def register_exception(app: FastAPI):
                 "code": exc.code,
                 "message": exc.message,
                 "data": exc.data,
-                "path": request.url.path,
+                "path": path,
                 "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "request_id": request_id,
             }
@@ -74,6 +84,17 @@ def register_exception(app: FastAPI):
         message = exc.detail or "请求处理失败"
         # 获取请求 ID
         request_id = getattr(request.state, "request_id", None)
+        path = request.url.path
+        method = request.method
+
+        # 记录为 WARNING 级别（方便监控，但不触发告警）
+        logger.bind(
+            path=path,
+            method=method,
+            request_id=request_id,
+            errors=exc,
+        ).warning(f"内置的 HTTP 异常: {path}")
+
         return JSONResponse(
             status_code=exc.status_code,
             content={
@@ -93,6 +114,18 @@ def register_exception(app: FastAPI):
         errors = [{"field": ".".join(str(l) for l in e["loc"]), "msg": e["msg"]} for e in exc.errors()]
         # 获取请求 ID
         request_id = getattr(request.state, "request_id", None)
+        path = request.url.path
+        method = request.method
+
+        # 记录为 WARNING 级别（方便监控，但不触发告警）
+        logger.bind(
+            path=path,
+            method=method,
+            request_id=request_id,
+            error_count=len(exc.errors()),
+            errors=errors,
+        ).warning(f"请求参数校验失败: {path}")
+
         return JSONResponse(
             status_code=200,
             content={
@@ -102,7 +135,7 @@ def register_exception(app: FastAPI):
                 "data": None,
                 "errors": errors,
                 "request_id": request_id,
-                "path": request.url.path,
+                "path": path,
                 "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
             }
         )
