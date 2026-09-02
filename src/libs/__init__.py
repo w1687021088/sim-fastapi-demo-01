@@ -7,5 +7,6 @@ from .log import logger
 __all__ = [
     'register_middleware',
     'register_exception',
+    'register_db',
     'logger',
 ]
