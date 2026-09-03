@@ -1,6 +1,5 @@
 # settings.py
 from typing import ClassVar
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
 
@@ -11,6 +10,7 @@ class AppConfigSettings(BaseSettings):
     APP_HOST: str = "127.0.0.1"
     APP_PORT: int = 8080
 
+    # 基础目录
     BASE_DIR: ClassVar[Path] = Path(__file__).resolve().parent
 
     # 数据库配置
