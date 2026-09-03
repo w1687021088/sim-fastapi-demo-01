@@ -26,22 +26,22 @@ class UserInfoModel(BaseModel):
         # 默认排序
         ordering = ["-created_at"]
 
-    @classmethod
-    def make_password(cls, login_password: str) -> str:
-        """
-        密码加密
-        :param login_password:str
-        :return: str
-        """
-        return pwd_context.hash(login_password)
-
-    def verify_password(self, login_password: str):
-        """
-         验证密码
-        :param login_password: str
-        :return: bool
-        """
-        return pwd_context.verify(login_password, self.password)
+    # @classmethod
+    # def make_password(cls, login_password: str) -> str:
+    #     """
+    #     密码加密
+    #     :param login_password:str
+    #     :return: str
+    #     """
+    #     return pwd_context.hash(login_password)
+    #
+    # def verify_password(self, login_password: str):
+    #     """
+    #      验证密码
+    #     :param login_password: str
+    #     :return: bool
+    #     """
+    #     return pwd_context.verify(login_password, self.password)
 
 
 class OnlineUserModel(BaseModel):
