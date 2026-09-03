@@ -1,5 +1,6 @@
-from .User import UserInfoModel
+from .User import UserInfoModel, OnlineUserModel
 
 __all__ = [
-    "UserInfoModel"
+    "UserInfoModel",
+    "OnlineUserModel"
 ]
