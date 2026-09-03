@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from .home import home_router
 from .system import system_router
+from .auth import auth_router
 
 
 def register_routes(app: FastAPI):
@@ -12,6 +13,9 @@ def register_routes(app: FastAPI):
 
     # 添加路径前缀
     router_path = lambda path: f"/api/v1/{path}"
+
+    # 注册鉴权路由
+    app.include_router(auth_router, prefix=router_path("auth"))
 
     # 注册首页路由
     app.include_router(home_router, prefix=router_path("home"))
