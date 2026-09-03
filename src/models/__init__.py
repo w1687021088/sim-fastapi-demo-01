@@ -1,5 +1,5 @@
-from .User import UserInfoModel as UserInfo
+from .User import UserInfoModel
 
 __all__ = [
-    "UserInfo"
+    "UserInfoModel"
 ]
