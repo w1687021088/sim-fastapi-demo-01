@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from src.models.User import UserInfoModel
+from pydantic import BaseModel
 
 router = APIRouter()
 

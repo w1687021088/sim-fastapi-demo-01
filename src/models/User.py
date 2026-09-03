@@ -27,21 +27,21 @@ class UserInfoModel(BaseModel):
         ordering = ["-created_at"]
 
     @classmethod
-    def make_password(cls, password):
+    def make_password(cls, login_password: str) -> str:
         """
         密码加密
-        :param password:str
+        :param login_password:str
         :return: str
         """
-        return pwd_context.hash(password)
+        return pwd_context.hash(login_password)
 
-    def verify_password(self, password):
+    def verify_password(self, login_password: str):
         """
          验证密码
-        :param password: str
+        :param login_password: str
         :return: bool
         """
-        return pwd_context.verify(password, self.password)
+        return pwd_context.verify(login_password, self.password)
 
 
 class OnlineUserModel(BaseModel):
