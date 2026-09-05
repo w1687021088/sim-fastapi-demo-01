@@ -31,6 +31,7 @@ class AppConfigSettings(BaseSettings):
     REDIS_PORT: int
     REDIS_PASSWORD: str
     REDIS_MAX_CONNECTIONS: int = 100
+    REDIS_DB: int
 
     model_config = SettingsConfigDict(
         env_file=Path(__file__).resolve().parent / ".env",  # 指定文件（相对于当前文件路径）
