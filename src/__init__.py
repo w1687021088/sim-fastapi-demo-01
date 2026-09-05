@@ -13,6 +13,7 @@ from .libs import (
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    """应用启动时执行"""
     try:
         await app_redis.connect()  # 链接 redis
         await app_db()  # 初始化数据库
