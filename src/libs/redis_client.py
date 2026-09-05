@@ -69,4 +69,4 @@ class RedisManager:
 
 
 # 全局单例
-redis_manager = RedisManager()
+app_redis = RedisManager()

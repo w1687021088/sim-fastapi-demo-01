@@ -6,16 +6,17 @@ from tortoise import Tortoise
 from .libs import (
     register_middleware,
     register_exception,
-    init_db,
-    redis_manager
+    app_db,
+    close_app_db,
+    app_redis
 )
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     try:
-        await redis_manager.connect() # 链接 redis
-        await init_db() # 初始化数据库
+        await app_redis.connect()  # 链接 redis
+        await app_db()  # 初始化数据库
         print("✅ 所有服务连接成功")
     except Exception as e:
         print(f"❌ 服务连接失败，应用无法启动: {e}")
@@ -25,12 +26,12 @@ async def lifespan(_: FastAPI):
 
     # 关闭时尽量保证都释放，即使某个报错也不影响其他的
     try:
-        await Tortoise.close_connections() # 关闭数据库连接
+        await close_app_db()  # 关闭数据库连接
     except Exception as e:
         print(f"⚠️ 数据库关闭异常: {e}")
 
     try:
-        await redis_manager.disconnect() # 关闭 redis 连接
+        await app_redis.disconnect()  # 关闭 redis 连接
     except Exception as e:
         print(f"⚠️ Redis 关闭异常: {e}")
 

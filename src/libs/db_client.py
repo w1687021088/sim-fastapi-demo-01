@@ -3,8 +3,10 @@ from settings import app_settings
 from tortoise import Tortoise
 from tortoise.contrib.fastapi import register_tortoise
 
+async def close_app_db():
+    await Tortoise.close_connections()
 
-async def init_db():
+async def app_db():
     """
      注册数据库
 
