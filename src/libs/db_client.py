@@ -1,7 +1,7 @@
-from fastapi import FastAPI
+# from fastapi import FastAPI
 from settings import app_settings
 from tortoise import Tortoise
-from tortoise.contrib.fastapi import register_tortoise
+# from tortoise.contrib.fastapi import register_tortoise
 
 async def close_app_db():
     await Tortoise.close_connections()
