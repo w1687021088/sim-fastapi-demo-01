@@ -24,7 +24,13 @@ class AppConfigSettings(BaseSettings):
     # jwt
     JWT_SECRET_KEY: str = "7492b3dd3d270286ba47d1887f900a9c6db105fcadca2feaea52bc926b865399"
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRE_MINUTES: int = 30 # 过期时间（分钟）
+    JWT_EXPIRE_MINUTES: int = 30  # 过期时间（分钟）
+
+    # redis
+    REDIS_HOST: str
+    REDIS_PORT: int
+    REDIS_PASSWORD: str
+    REDIS_MAX_CONNECTIONS: int = 100
 
     model_config = SettingsConfigDict(
         env_file=Path(__file__).resolve().parent / ".env",  # 指定文件（相对于当前文件路径）
