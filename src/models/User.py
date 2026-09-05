@@ -1,3 +1,5 @@
+from typing import Any
+
 from .base import BaseModel
 from tortoise import fields
 import uuid
@@ -8,11 +10,15 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class UserInfoModel(BaseModel):
+    def __init__(self, **kwargs: Any):
+        super().__init__(**kwargs)
+        self.online_user: OnlineUserModel = None
+
     """
     用户信息表
     """
     id = fields.BigIntField(pk=True)
-    user_uuid = fields.UUIDField(unique=True, default=uuid.uuid4, description="用户公开唯一标识")
+    user_id = fields.UUIDField(unique=True, default=uuid.uuid4, description="用户公开唯一标识")
     username = fields.CharField(unique=True, max_length=100, description="用户名称")
     password = fields.CharField(max_length=100, description="用户密码")
     email = fields.CharField(max_length=255, unique=True, null=True, description="用户邮箱")
@@ -49,10 +55,17 @@ class OnlineUserModel(BaseModel):
     在线用户表
     """
     id = fields.BigIntField(pk=True)
-    browser = fields.CharField(max_length=255, description="浏览器信息")
-    os = fields.CharField(max_length=255, description="操作系统信息")
-    ip = fields.CharField(max_length=20, description="用户IP")
-    user = fields.ForeignKeyField("models.UserInfoModel", related_name="User_info", null=True, on_delete=fields.CASCADE)
+    browser = fields.CharField(max_length=255, null=True, description="浏览器信息")
+    os = fields.CharField(max_length=255, null=True, description="操作系统信息")
+    ip = fields.CharField(max_length=20, null=True, description="用户IP")
+    client = fields.CharField(max_length=255, null=True, description="客户端类型：pc、android、ios")
+    user = fields.ForeignKeyField(
+        "models.UserInfoModel",
+        related_name="online_user",
+        null=True,
+        on_delete=fields.CASCADE,
+        db_constraint=True
+    )
 
     class Meta:
         # 表名
