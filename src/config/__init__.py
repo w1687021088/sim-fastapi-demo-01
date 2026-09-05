@@ -21,6 +21,13 @@ class BizCode(IntEnum):
     USER_NOT_LOGIN = 2004
     USER_PERMISSION_DENIED = 2005
 
+    # ====== 认证相关（新增） ======
+    TOKEN_MISSING = 2006  # 未提供 token
+    TOKEN_INVALID = 2007  # token 无效（签名错误、格式错误）
+    TOKEN_EXPIRED = 2008  # token 已过期
+    TOKEN_BLACKLISTED = 2009  # token 已登出（在黑名单）
+    TOKEN_MISSING_JTI = 2010  # token 缺少 jti
+
     # 订单模块 3000-3999
     ORDER_NOT_FOUND = 3001
     ORDER_STATUS_ERROR = 3002
@@ -46,4 +53,10 @@ biz_code_messages = {
     BizCode.ORDER_NOT_FOUND: "订单不存在",
     BizCode.INSUFFICIENT_BALANCE: "余额不足",
     BizCode.SERVER_ERROR: "服务器内部错误，请稍后重试",
+    # ====== 认证相关（新增） ======
+    BizCode.TOKEN_MISSING: "未提供 token",
+    BizCode.TOKEN_INVALID: "无效 token，请重新登录",
+    BizCode.TOKEN_EXPIRED: "token 已过期，请重新登录",
+    BizCode.TOKEN_BLACKLISTED: "token 已登出，请重新登录",
+    BizCode.TOKEN_MISSING_JTI: "token 格式异常，请重新登录",
 }
