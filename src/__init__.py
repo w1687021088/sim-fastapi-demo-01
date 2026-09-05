@@ -1,14 +1,13 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from .apps import register_routes
-from tortoise import Tortoise
-
 from .libs import (
     register_middleware,
     register_exception,
     app_db,
     close_app_db,
-    app_redis
+    app_redis,
+    logger,
 )
 
 
@@ -19,7 +18,7 @@ async def lifespan(_: FastAPI):
         await app_db()  # 初始化数据库
         print("✅ 所有服务连接成功")
     except Exception as e:
-        print(f"❌ 服务连接失败，应用无法启动: {e}")
+        logger.error(f"❌ 服务连接失败，应用无法启动: {e}")
         raise
 
     yield
@@ -28,12 +27,12 @@ async def lifespan(_: FastAPI):
     try:
         await close_app_db()  # 关闭数据库连接
     except Exception as e:
-        print(f"⚠️ 数据库关闭异常: {e}")
+        logger.error(f"⚠️ 数据库关闭异常: {e}")
 
     try:
         await app_redis.disconnect()  # 关闭 redis 连接
     except Exception as e:
-        print(f"⚠️ Redis 关闭异常: {e}")
+        logger.error(f"⚠️ Redis 关闭异常: {e}")
 
     print("🛑 所有连接已释放")
 
