@@ -8,26 +8,26 @@ def register_db(app: FastAPI):
      注册数据库
 
     init 初始化数据库
-    tortoise -c src.libs.db.TORTOISE_ORM init
+    tortoise -c src.libs.db_client.TORTOISE_ORM init
     为已配置的应用创建迁移包。这确保了每个应用都有一个 migrations 模块
 
     makemigrations
-    tortoise -c src.libs.db.TORTOISE_ORM makemigrations 检测 所有已注册的应用（apps） 的模型变化。自动生成包含模型变化的迁移文件（如新增字段、删除表等）
-    tortoise -c src.libs.db.TORTOISE_ORM makemigrations --name add_posts_table 生成名为 add_posts_table 的迁移文件
-    tortoise -c src.libs.db.TORTOISE_ORM makemigrations users 为 users 应用生成迁移文件
-    tortoise -c src.libs.db.TORTOISE_ORM makemigrations --empty users 为 users 应用生成空迁移文件
+    tortoise -c src.libs.db_client.TORTOISE_ORM makemigrations 检测 所有已注册的应用（apps） 的模型变化。自动生成包含模型变化的迁移文件（如新增字段、删除表等）
+    tortoise -c src.libs.db_client.TORTOISE_ORM makemigrations --name add_posts_table 生成名为 add_posts_table 的迁移文件
+    tortoise -c src.libs.db_client.TORTOISE_ORM makemigrations users 为 users 应用生成迁移文件
+    tortoise -c src.libs.db_client.TORTOISE_ORM makemigrations --empty users 为 users 应用生成空迁移文件
 
     rm -f src/migrations/0001_initial.py
     rm -rf src/migrations/__pycache__
 
 
-    tortoise -c src.libs.db.TORTOISE_ORM migrate 或 tortoise -c src.libs.db.TORTOISE_ORM  upgrade
+    tortoise -c src.libs.db_client.TORTOISE_ORM migrate 或 tortoise -c src.libs.db_client.TORTOISE_ORM  upgrade
     应用迁移。migrate 可以根据目标向前或向后迁移。upgrade 仅限向前迁移，拒绝回滚
 
-    tortoise -c src.libs.db.TORTOISE_ORM history
+    tortoise -c src.libs.db_client.TORTOISE_ORM history
     显示当前数据库已执行的迁移历史记录。
 
-    tortoise -c src.libs.db.TORTOISE_ORM heads
+    tortoise -c src.libs.db_client.TORTOISE_ORM heads
     列出当前所有已生成的迁移文件版本号（即代码里的最新文件列表）。
 
     tortoise downgrade

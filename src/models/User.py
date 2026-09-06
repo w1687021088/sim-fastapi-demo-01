@@ -1,8 +1,5 @@
-from typing import Any
-
 from .base import BaseModel
 from tortoise import fields
-import uuid
 from passlib.context import CryptContext
 
 # 密码加密
@@ -18,7 +15,7 @@ class UserInfoModel(BaseModel):
     用户信息表
     """
     id = fields.BigIntField(pk=True)
-    user_id = fields.UUIDField(unique=True, default=uuid.uuid4, description="用户公开唯一标识")
+    user_id = fields.BigIntField(unique=True, description="用户公开唯一标识（雪花ID）")
     username = fields.CharField(unique=True, max_length=100, description="用户名称")
     password = fields.CharField(max_length=100, description="用户密码")
     email = fields.CharField(max_length=255, unique=True, null=True, description="用户邮箱")

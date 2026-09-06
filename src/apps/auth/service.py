@@ -1,18 +1,19 @@
 from datetime import datetime, UTC
 from typing import Any
-from config import BizCode
+from src.config import BizCode
 from src.libs.redis_client import app_redis
 from src.libs.exception import raise_biz_error
 from src.models import UserInfoModel
-from src.utils import hash_password, create_access_token
-from apps.auth.schemas import (
+from src.utils.bcrypt_utils import hash_password, verify_password
+from src.utils.jwt_utils import create_access_token, access_token_blocklist_key_prefix
+from src.utils.snowflake_utils import generate_snowflake_id
+from src.apps.auth.schemas import (
     AuthRegisterBody,
     AuthLoginBody,
     AuthLoginResponse,
     AuthChangePasswordBody,
     UserInfoResponse
 )
-from utils import verify_password, access_token_blocklist_key_prefix
 
 
 async def handle_register(body: AuthRegisterBody):
@@ -32,8 +33,12 @@ async def handle_register(body: AuthRegisterBody):
 
     hashed_password = hash_password(body.password)
 
+    # id
+    user_id = generate_snowflake_id()
+
     # 5. 创建用户
     user = await UserInfoModel.create(
+        user_id=user_id,
         username=body.username,
         password=hashed_password,
         phone=body.phone,

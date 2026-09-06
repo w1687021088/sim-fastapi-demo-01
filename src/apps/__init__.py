@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from .home import home_router
-from .system import system_router
-from .auth import auth_router
+from src.apps.home import home_router
+from src.apps.system import system_router
+from src.apps.auth import auth_router
 
 
 def register_routes(app: FastAPI):

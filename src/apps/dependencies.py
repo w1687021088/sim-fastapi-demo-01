@@ -2,8 +2,7 @@ from fastapi import Depends, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from redis.exceptions import RedisError
-
-from src.utils import decode_access_token, access_token_blocklist_key_prefix
+from src.utils.jwt_utils import decode_access_token, access_token_blocklist_key_prefix
 from src.libs.redis_client import app_redis
 from src.libs.exception import raise_biz_error
 from src.config import BizCode

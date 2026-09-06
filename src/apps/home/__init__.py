@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from .views.view import router as main_router
+from src.apps.home.views.view import router as main_router
 from src.apps.dependencies import require_auth
 
 home_router = APIRouter(dependencies=[Depends(require_auth)])

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Body, Depends
 from typing import Annotated
-from apps.auth.schemas import (
+from src.apps.auth.schemas import (
     AuthRegisterBody,
     AuthRegisterResponse,
     AuthLoginBody,
@@ -9,7 +9,7 @@ from apps.auth.schemas import (
     UserInfoResponse
 )
 from src.config import AppResponse, CommonResponseModel
-from apps.auth.service import (
+from src.apps.auth.service import (
     handle_register,
     handle_login,
     handle_change_password,

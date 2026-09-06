@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from .views.user import router as user_router
+from src.apps.system.views.user import router as user_router
 
 system_router = APIRouter()
 
