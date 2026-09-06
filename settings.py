@@ -22,9 +22,9 @@ class AppConfigSettings(BaseSettings):
     DB_URL: str = ''
 
     # jwt
-    JWT_SECRET_KEY: str = "7492b3dd3d270286ba47d1887f900a9c6db105fcadca2feaea52bc926b865399"
-    JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRE_MINUTES: int = 30  # 过期时间（分钟）
+    JWT_SECRET_KEY: str
+    JWT_ALGORITHM: str
+    JWT_EXPIRE_MINUTES: int
 
     # redis
     REDIS_HOST: str

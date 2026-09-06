@@ -3,6 +3,20 @@ import re
 from typing import Annotated
 
 
+def validate_password_strength(v: str) -> str:
+    """密码强度校验：长度8~32，必须含数字和特殊符号，只能包含特定字符集"""
+    if not (8 <= len(v) <= 32):
+        raise ValueError("密码长度必须为 8~32 位")
+    allowed = r"^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};:'\",.<>/?|\\~`]+$"
+    if not re.match(allowed, v):
+        raise ValueError("密码只能包含字母、数字和常见特殊符号（如 !@#$%^&* 等）")
+    if not re.search(r"\d", v):
+        raise ValueError("密码必须包含至少一个数字")
+    if not re.search(r"[^A-Za-z0-9]", v):
+        raise ValueError("密码必须包含至少一个特殊符号（如 !@#$%^&* 等）")
+    return v
+
+
 class AuthRegisterBody(BaseModel):
     """注册请求体"""
     username: str
@@ -23,20 +37,7 @@ class AuthRegisterBody(BaseModel):
 
     @field_validator("password")
     def validate_password(cls, v: str) -> str:
-        if not (8 <= len(v) <= 32):
-            raise ValueError("密码长度必须为 8~32 位")
-
-        allowed = r"^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};:'\",.<>/?|\\~`]+$"
-        if not re.match(allowed, v):
-            raise ValueError("密码只能包含字母、数字和常见特殊符号（如 !@#$%^&* 等）")
-
-        if not re.search(r"\d", v):
-            raise ValueError("密码必须包含至少一个数字")
-
-        if not re.search(r"[^A-Za-z0-9]", v):
-            raise ValueError("密码必须包含至少一个特殊符号（如 !@#$%^&* 等）")
-
-        return v
+        return validate_password_strength(v)
 
     @field_validator("phone")
     def validate_phone(cls, v: str | None) -> str | None:
@@ -76,7 +77,7 @@ class AuthRegisterResponse(BaseModel):
     token: str
 
 
-class UserInfo(BaseModel):
+class UserInfoResponse(BaseModel):
     """用户信息"""
     user_id: Annotated[str, Field(description="用户ID")]
     username: Annotated[str, Field(description="用户名")]
@@ -88,7 +89,7 @@ class UserInfo(BaseModel):
     enabled: Annotated[bool, Field(description="是否启用")]
 
 
-class AuthLoginResponse(UserInfo):
+class AuthLoginResponse(UserInfoResponse):
     """登录响应"""
     token: str
 
@@ -97,3 +98,27 @@ class AuthLoginBody(BaseModel):
     """登录请求体"""
     username: str
     password: str
+
+
+class AuthChangePasswordBody(BaseModel):
+    """修改密码请求体"""
+    old_password: Annotated[str, Field(description="旧密码")]
+    new_password: Annotated[str, Field(description="新密码")]
+    confirm_new_password: Annotated[str, Field(description="确认新密码")]
+
+    @field_validator("new_password")
+    def validate_new_password(cls, v: str) -> str:
+        return validate_password_strength(v)
+
+    @field_validator("confirm_new_password")
+    def validate_confirm(cls, v: str, info: ValidationInfo) -> str:
+        if v != info.data.get("new_password"):
+            raise ValueError("两次输入的新密码不一致")
+        return v
+
+    @field_validator("new_password", mode="after")
+    def validate_old_new_not_same(cls, v: str, info: ValidationInfo) -> str:
+        old = info.data.get("old_password")
+        if old and v == old:
+            raise ValueError("新密码不能与旧密码相同")
+        return v
