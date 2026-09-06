@@ -1,6 +1,6 @@
-from datetime import datetime, UTC
+from datetime import datetime
 from typing import Any
-from src.config import BizCode
+from src.config.biz_code import BizCode
 from src.libs.redis_client import app_redis
 from src.libs.exception import raise_biz_error
 from src.models import UserInfoModel

@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from .apps import register_routes
-from .libs.redis_client import app_redis
-from .libs.log import logger
-from .libs import (
+from src.apps import register_routes
+from src.libs.redis_client import app_redis
+from src.libs.log import logger
+from src.libs import (
     register_middleware,
     register_exception,
     register_db,

@@ -8,7 +8,7 @@ from src.apps.auth.schemas import (
     AuthChangePasswordBody,
     UserInfoResponse
 )
-from src.config import AppResponse, CommonResponseModel
+from src.config.response import AppResponse, CommonResponseModel
 from src.apps.auth.service import (
     handle_register,
     handle_login,

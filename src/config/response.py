@@ -4,7 +4,7 @@ from typing import Any, Optional, Annotated, Generic, TypeVar
 from fastapi import status
 from pydantic import Field, BaseModel
 
-from src.config import BizCode
+from src.config.biz_code import BizCode
 
 T = TypeVar("T")
 
