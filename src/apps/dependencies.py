@@ -1,10 +1,11 @@
-from fastapi import Depends
+from fastapi import Depends, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from redis.exceptions import RedisError  # 导入 Redis 异常
 
 from src.utils import decode_access_token, access_token_blocklist_key_prefix
-from src.libs import app_redis, raise_biz_error
+from src.libs import app_redis
+from src.libs.exception import raise_biz_error
 from src.config import BizCode
 
 oauth2_scheme = OAuth2PasswordBearer(
@@ -19,7 +20,7 @@ async def require_auth(token: str = Depends(oauth2_scheme)):
     if not token:
         raise_biz_error(
             code=BizCode.TOKEN_MISSING,
-            http_status_code=401
+            http_status_code=status.HTTP_401_UNAUTHORIZED
         )
 
     # 2. 解码并验证 token
@@ -28,12 +29,12 @@ async def require_auth(token: str = Depends(oauth2_scheme)):
     except ExpiredSignatureError:
         raise_biz_error(
             code=BizCode.TOKEN_EXPIRED,
-            http_status_code=401
+            http_status_code=status.HTTP_401_UNAUTHORIZED
         )
     except InvalidTokenError:
         raise_biz_error(
             code=BizCode.TOKEN_INVALID,
-            http_status_code=401
+            http_status_code=status.HTTP_401_UNAUTHORIZED
         )
     else:
         # 只有 token 解码成功时才执行这里

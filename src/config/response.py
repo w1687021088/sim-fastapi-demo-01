@@ -6,9 +6,12 @@ from pydantic import Field, BaseModel
 
 from src.config import BizCode
 
+T = TypeVar("T")
+
 
 class AppResponse(JSONResponse):
-    """ App Response """
+    """ 应用程序响应 """
+
     def __init__(self, data: Optional[dict[str, Any]] = None, status_code: int = status.HTTP_200_OK,
                  message: Optional[str] = 'Success',
                  **kwargs: Any):
@@ -16,16 +19,14 @@ class AppResponse(JSONResponse):
             'code': BizCode.SUCCESS,
             'data': data,
             'message': message,
-             "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         }
         self.data.update(kwargs)
         super().__init__(content=self.data, status_code=status_code)
 
 
-T = TypeVar("T")
-
 class CommonResponseModel(BaseModel, Generic[T]):
-    """ Common Response Model """
+    """ 共同响应模型 """
     code: Annotated[BizCode, Field(..., description="业务代码")]
     data: T
     message: str

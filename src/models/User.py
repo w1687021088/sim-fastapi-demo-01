@@ -10,9 +10,9 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class UserInfoModel(BaseModel):
-    def __init__(self, **kwargs: Any):
-        super().__init__(**kwargs)
-        self.online_user: OnlineUserModel = None
+    # def __init__(self, **kwargs: Any):
+    #     super().__init__(**kwargs)
+    #     self.online_user: OnlineUserModel = None
 
     """
     用户信息表

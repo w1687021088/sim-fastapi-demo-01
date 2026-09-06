@@ -1,12 +1,9 @@
-# from fastapi import FastAPI
+from fastapi import FastAPI
 from settings import app_settings
-from tortoise import Tortoise
-# from tortoise.contrib.fastapi import register_tortoise
+from tortoise.contrib.fastapi import register_tortoise
 
-async def close_app_db():
-    await Tortoise.close_connections()
 
-async def app_db():
+def register_db(app: FastAPI):
     """
      注册数据库
 
@@ -36,8 +33,8 @@ async def app_db():
     tortoise downgrade
     取消特定应用的已应用迁移。downgrade 仅限向后迁移，拒绝应用新的迁移。如果未提供迁移名称，它将针对该应用的第一个迁移。
     """
-    # register_tortoise(app, config=TORTOISE_ORM)
-    await Tortoise.init(config=TORTOISE_ORM)
+    register_tortoise(app, config=TORTOISE_ORM)
+    # await Tortoise.init(config=TORTOISE_ORM)
     # await Tortoise.generate_schemas() # 只有开发环境才自动建表
 
 

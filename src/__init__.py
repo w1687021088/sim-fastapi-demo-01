@@ -4,8 +4,7 @@ from .apps import register_routes
 from .libs import (
     register_middleware,
     register_exception,
-    app_db,
-    close_app_db,
+    register_db,
     app_redis,
     logger,
 )
@@ -16,7 +15,6 @@ async def lifespan(_: FastAPI):
     """应用启动时执行"""
     try:
         await app_redis.connect()  # 链接 redis
-        await app_db()  # 初始化数据库
         print("✅ 所有服务连接成功")
     except Exception as e:
         logger.error(f"❌ 服务连接失败，应用无法启动: {e}")
@@ -25,11 +23,6 @@ async def lifespan(_: FastAPI):
     yield
 
     # 关闭时尽量保证都释放，即使某个报错也不影响其他的
-    try:
-        await close_app_db()  # 关闭数据库连接
-    except Exception as e:
-        logger.error(f"⚠️ 数据库关闭异常: {e}")
-
     try:
         await app_redis.disconnect()  # 关闭 redis 连接
     except Exception as e:
@@ -49,5 +42,7 @@ def create_app() -> FastAPI:
     register_middleware(app)
     # 注册异常处理
     register_exception(app)
+    # 注册数据库
+    register_db(app)
 
     return app

@@ -74,3 +74,26 @@ class AuthRegisterBody(BaseModel):
 class AuthRegisterResponse(BaseModel):
     """注册响应"""
     token: str
+
+
+class UserInfo(BaseModel):
+    """用户信息"""
+    user_id: Annotated[str, Field(description="用户ID")]
+    username: Annotated[str, Field(description="用户名")]
+    phone: Annotated[str | None, Field(description="手机号码")]
+    email: Annotated[str | None, Field(description="邮箱地址")]
+    avatar: Annotated[str | None, Field(description="用户头像")]
+    created_at: Annotated[str, Field(description="创建时间")]
+    updated_at: Annotated[str, Field(description="更新时间")]
+    enabled: Annotated[bool, Field(description="是否启用")]
+
+
+class AuthLoginResponse(UserInfo):
+    """登录响应"""
+    token: str
+
+
+class AuthLoginBody(BaseModel):
+    """登录请求体"""
+    username: str
+    password: str
