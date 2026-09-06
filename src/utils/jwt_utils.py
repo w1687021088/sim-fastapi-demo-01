@@ -46,7 +46,6 @@ def decode_access_token(token: str) -> dict[str, str]:
 
 def access_token_blocklist_key_prefix(jti: str) -> str:
     """获取访问令牌黑名单key前缀"""
-    print(jti)
     return f"auth:access-token:{jti}"
 
 
