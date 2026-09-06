@@ -1,4 +1,4 @@
-from .code import BizCode, biz_code_messages
+from .biz_code import BizCode, biz_code_messages
 from .response import AppResponse, CommonResponseModel
 
 __all__ = [

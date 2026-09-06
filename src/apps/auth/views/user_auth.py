@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Body
-
-from apps.auth.schemas import AuthRegisterBody, AuthRegisterResponse
 from typing import Annotated
-from src.config import AppResponse, CommonResponseModel
+from apps.auth.schemas import AuthRegisterBody, AuthRegisterResponse
+from config import AppResponse, CommonResponseModel
 
 router = APIRouter()
 
