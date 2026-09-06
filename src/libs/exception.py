@@ -38,6 +38,20 @@ class AppException(Exception):
         return biz_code_messages.get(code, "未知错误")
 
 
+class HandleError(JSONResponse):
+    """ 自定义错误响应类 """
+    def __init__(self, status_code: int, **kwargs: Any):
+        self.data = {
+            "success": False,
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        }
+        self.data.update(kwargs)
+        super().__init__(
+            status_code=status_code,
+            content=self.data
+        )
+
+
 def raise_biz_error(code: BizCode, message: Optional[str] = None, data: Optional[Any] = None, **kwargs):
     """快捷抛出业务异常"""
     raise AppException(code=code, message=message, data=data, **kwargs)
@@ -64,17 +78,13 @@ def register_exception(app: FastAPI):
             errors=exc,
         ).warning(f"业务异常: {path}")
 
-        return JSONResponse(
+        return HandleError(
             status_code=exc.http_status_code,
-            content={
-                "success": False,
-                "code": exc.code,
-                "message": exc.message,
-                "data": exc.data,
-                "path": path,
-                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                "request_id": request_id,
-            }
+            code=exc.code,
+            message=exc.message,
+            data=exc.data,
+            path=path,
+            request_id=request_id,
         )
 
     # 处理 FastAPI 内置的 HTTP 异常
@@ -94,17 +104,11 @@ def register_exception(app: FastAPI):
             errors=exc,
         ).warning(f"内置的 HTTP 异常: {path}")
 
-        return JSONResponse(
+        return HandleError(
             status_code=exc.status_code,
-            content={
-                "success": False,
-                "code": exc.status_code,
-                "message": message,
-                "data": None,
-                "path": request.url.path,
-                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                "request_id": request_id,
-            }
+            message=message,
+            path=path,
+            request_id=request_id,
         )
 
     # 处理 Pydantic 参数校验失败异常 (RequestValidationError)
@@ -125,18 +129,14 @@ def register_exception(app: FastAPI):
             errors=errors,
         ).warning(f"请求参数校验失败: {path}")
 
-        return JSONResponse(
-            status_code=200,
-            content={
-                "success": False,
-                "code": BizCode.VALIDATION_ERROR,
-                "message": "请求参数校验失败",
-                "data": None,
-                "errors": errors,
-                "request_id": request_id,
-                "path": path,
-                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
-            }
+        return HandleError(
+            status_code=status.HTTP_200_OK,
+            code=BizCode.VALIDATION_ERROR,
+            message="请求参数校验失败",
+            data=None,
+            errors=errors,
+            path=path,
+            request_id=request_id,
         )
 
     # 兜底处理所有未被捕获的系统异常
@@ -163,15 +163,11 @@ def register_exception(app: FastAPI):
             request_body=body_str,
         ).error("未处理的系统异常")
 
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,  # 改为 500
-            content={
-                "success": False,
-                "code": BizCode.SERVER_ERROR,  # 9999
-                "message": "服务器内部错误，请稍后重试",
-                "data": None,
-                "path": request.url.path,
-                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                "request_id": request_id,
-            }
+        return HandleError(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            code=BizCode.SERVER_ERROR,
+            message="服务器内部错误，请稍后重试",
+            data=None,
+            path=request.url.path,
+            request_id=request_id,
         )
