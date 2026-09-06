@@ -2,11 +2,11 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from .apps import register_routes
 from .libs.redis_client import app_redis
+from .libs.log import logger
 from .libs import (
     register_middleware,
     register_exception,
     register_db,
-    logger,
 )
 
 
