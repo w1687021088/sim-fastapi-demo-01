@@ -1,10 +1,17 @@
 from fastapi import Depends, status
+
 from fastapi.security import OAuth2PasswordBearer
+
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
+
 from redis.exceptions import RedisError
+
 from src.utils.jwt_utils import decode_access_token, access_token_blocklist_key_prefix
+
 from src.libs.redis_client import app_redis
+
 from src.libs.exception import raise_biz_error
+
 from src.config.biz_code import BizCode
 
 oauth2_scheme = OAuth2PasswordBearer(
@@ -14,6 +21,7 @@ oauth2_scheme = OAuth2PasswordBearer(
 
 
 async def require_auth(token: str = Depends(oauth2_scheme)):
+    """需要授权依赖"""
     if not token:
         raise_biz_error(
             code=BizCode.TOKEN_MISSING,
