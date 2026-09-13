@@ -1,22 +1,8 @@
 from fastapi import APIRouter, Body, Depends
 from typing import Annotated
-from src.apps.auth.schemas import (
-    AuthRegisterBody,
-    AuthRegisterResponse,
-    AuthLoginBody,
-    AuthLoginResponse,
-    AuthChangePasswordBody,
-    UserInfoResponse
-)
+from src.apps.auth.schemas import AuthRegisterBody, AuthRegisterResponse, AuthLoginBody, AuthLoginResponse
 from src.config.response import AppResponse, CommonResponseModel
-from src.apps.auth.service import (
-    handle_register,
-    handle_login,
-    handle_change_password,
-    handle_logout,
-    handle_get_user_info
-
-)
+from src.apps.auth.service import handle_register, handle_login, handle_logout
 from src.apps.dependencies import require_auth
 
 router = APIRouter()
@@ -34,19 +20,7 @@ async def register(body: Annotated[AuthRegisterBody, Body()]):
     return AppResponse(data=result)
 
 
-@router.post("/change-password", description="用户修改密码", response_model=CommonResponseModel)
-async def change_password(body: AuthChangePasswordBody, current_user: dict = Depends(require_auth)):
-    await handle_change_password(body, current_user)
-    return AppResponse(message="密码修改成功，请重新登录")
-
-
 @router.post("/logout", description="登出", response_model=CommonResponseModel)
 async def logout(current_user: dict = Depends(require_auth)):
     await handle_logout(current_user)
     return AppResponse(message="登出成功")
-
-
-@router.get("/user-info", description="获取用户信息", response_model=CommonResponseModel[UserInfoResponse])
-async def get_user_info(current_user: dict = Depends(require_auth)):
-    info = await handle_get_user_info(current_user)
-    return AppResponse(data=info)
