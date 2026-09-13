@@ -99,6 +99,10 @@ class AuthLoginBody(BaseModel):
     username: str
     password: str
 
+    @field_validator("password")
+    def validate_password(cls, v: str) -> str:
+        return validate_password_strength(v)
+
 
 class AuthChangePasswordBody(BaseModel):
     """修改密码请求体"""
