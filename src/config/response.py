@@ -25,7 +25,7 @@ class AppResponse(JSONResponse):
         super().__init__(content=self.data, status_code=status_code)
 
 
-class CommonResponseModel(BaseModel, Generic[T]):
+class AppResponseModel(BaseModel, Generic[T]):
     """ 共同响应模型 """
     code: Annotated[BizCode, Field(..., description="业务代码")]
     data: T
