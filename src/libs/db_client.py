@@ -11,6 +11,8 @@ def register_db(app: FastAPI):
     tortoise -c src.libs.db_client.TORTOISE_ORM init
     为已配置的应用创建迁移包。这确保了每个应用都有一个 migrations 模块
 
+    uv run python -m tortoise -c src.libs.db_client.TORTOISE_ORM migrate
+
     makemigrations
     tortoise -c src.libs.db_client.TORTOISE_ORM makemigrations 检测 所有已注册的应用（apps） 的模型变化。自动生成包含模型变化的迁移文件（如新增字段、删除表等）
     tortoise -c src.libs.db_client.TORTOISE_ORM makemigrations --name add_posts_table 生成名为 add_posts_table 的迁移文件
